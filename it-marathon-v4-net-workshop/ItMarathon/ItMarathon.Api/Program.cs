@@ -29,6 +29,16 @@ try
             opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         });
 
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowSpecificOrigin", policy =>
+        {
+            policy.WithOrigins("http://localhost:3000") // Allow your Angular app origin
+                .AllowAnyHeader()                    // Allow any header
+                .AllowAnyMethod();                   // Allow any HTTP method (GET, POST, etc.)
+        });
+    });
+
     builder.Services.AddAutoMapper(typeof(Program));
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.ConfigureDal(builder.Configuration);
@@ -101,6 +111,9 @@ try
     }
 
     app.UseHttpsRedirection();
+
+    app.UseCors("AllowSpecificOrigin");
+
     app.UseMiddleware<AuthorizationMiddleware>();
     app.UseAuthentication();
     app.UseAuthorization();
